@@ -32,43 +32,73 @@ const TEAMS = [
 ];
 
 const HITTING_STATS = [
-  {key:'homeRuns',label:'Home Runs',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'rbi',label:'RBI',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'hits',label:'Hits',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'runs',label:'Runs Scored',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'stolenBases',label:'Stolen Bases',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'strikeOuts',label:'Strikeouts (Batter)',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'baseOnBalls',label:'Walks',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'doubles',label:'Doubles',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'triples',label:'Triples',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'totalBases',label:'Total Bases',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'plateAppearances',label:'Plate Appearances',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'avg',label:'Batting Average',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(3),order:'desc',pool:'Qualified'},
-  {key:'ops',label:'OPS',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(3),order:'desc',pool:'Qualified'},
-  {key:'slg',label:'Slugging %',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(3),order:'desc',pool:'Qualified'},
-  {key:'obp',label:'On-Base %',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(3),order:'desc',pool:'Qualified'},
-  {key:'war',label:'WAR',type:'sabermetrics',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),order:'desc'},
-  {key:'woba',label:'wOBA',type:'sabermetrics',careerOk:false,fmt:v=>parseFloat(v).toFixed(3),order:'desc',pool:'Qualified'},
-  {key:'wRcPlus',label:'wRC+',type:'sabermetrics',careerOk:false,fmt:v=>Math.round(v)+'',order:'desc',pool:'Qualified'},
+  // ── Standard ──────────────────────────────────────────────────────────────
+  {key:'homeRuns',          label:'Home Runs',               type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'rbi',               label:'RBI',                     type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'hits',              label:'Hits',                    type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'runs',              label:'Runs Scored',             type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'stolenBases',       label:'Stolen Bases',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'strikeOuts',        label:'Strikeouts (Batter)',     type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'baseOnBalls',       label:'Walks',                   type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'doubles',           label:'Doubles',                 type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'triples',           label:'Triples',                 type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'totalBases',        label:'Total Bases',             type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'plateAppearances',  label:'Plate Appearances',       type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'atBats',            label:'At Bats',                 type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'gamesPlayed',       label:'Games Played',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'sacFlies',          label:'Sacrifice Flies',         type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'sacBunts',          label:'Sacrifice Bunts',         type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'hitByPitch',        label:'Hit By Pitch',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'intentionalWalks',  label:'Intentional Walks',       type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'caughtStealing',    label:'Caught Stealing',         type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'groundIntoDoublePlay',label:'Ground Into DP',        type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'leftOnBase',        label:'Left On Base',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'numberOfPitches',   label:'Pitches Seen',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  // ── Rate stats ─────────────────────────────────────────────────────────────
+  {key:'avg',               label:'Batting Average',         type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(3),        order:'desc', pool:'Qualified'},
+  {key:'ops',               label:'OPS',                     type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(3),        order:'desc', pool:'Qualified'},
+  {key:'slg',               label:'Slugging %',              type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(3),        order:'desc', pool:'Qualified'},
+  {key:'obp',               label:'On-Base %',               type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(3),        order:'desc', pool:'Qualified'},
+  {key:'babip',             label:'BABIP',                   type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(3),        order:'desc', pool:'Qualified'},
+  // ── Advanced ───────────────────────────────────────────────────────────────
+  {key:'war',               label:'WAR',                     type:'sabermetrics',careerOk:false, fmt:v=>parseFloat(v).toFixed(1), order:'desc'},
+  {key:'woba',              label:'wOBA',                    type:'sabermetrics',careerOk:false, fmt:v=>parseFloat(v).toFixed(3), order:'desc', pool:'Qualified'},
+  {key:'wRcPlus',           label:'wRC+',                    type:'sabermetrics',careerOk:false, fmt:v=>Math.round(v)+'',         order:'desc', pool:'Qualified'},
 ];
 const PITCHING_STATS = [
-  {key:'strikeOuts',label:'Strikeouts',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'wins',label:'Wins',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'saves',label:'Saves',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'holds',label:'Holds',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'homeRuns',label:'Home Runs Allowed',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'baseOnBalls',label:'Walks Allowed',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'hits',label:'Hits Allowed',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'gamesStarted',label:'Games Started',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'losses',label:'Losses',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'battersFaced',label:'Batters Faced',type:'season',careerOk:true,fmt:v=>+v,order:'desc'},
-  {key:'era',label:'ERA',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(2),order:'asc',pool:'Qualified'},
-  {key:'whip',label:'WHIP',type:'season',careerOk:true,fmt:v=>parseFloat(v).toFixed(2),order:'asc',pool:'Qualified'},
-  {key:'strikeoutsPer9Inn',label:'K/9',type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),order:'desc',pool:'Qualified'},
-  {key:'strikeoutWalkRatio',label:'K/BB Ratio',type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(2),order:'desc',pool:'Qualified'},
-  {key:'war',label:'WAR',type:'sabermetrics',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),order:'desc'},
-  {key:'fip',label:'FIP',type:'sabermetrics',careerOk:false,fmt:v=>parseFloat(v).toFixed(2),order:'asc',pool:'Qualified'},
-  {key:'xfip',label:'xFIP',type:'sabermetrics',careerOk:false,fmt:v=>parseFloat(v).toFixed(2),order:'asc',pool:'Qualified'},
+  // ── Standard ──────────────────────────────────────────────────────────────
+  {key:'strikeOuts',        label:'Strikeouts',              type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'wins',              label:'Wins',                    type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'saves',             label:'Saves',                   type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'holds',             label:'Holds',                   type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'homeRuns',          label:'Home Runs Allowed',       type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'baseOnBalls',       label:'Walks Allowed',           type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'hits',              label:'Hits Allowed',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'gamesStarted',      label:'Games Started',           type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'gamesPitched',      label:'Games Pitched',           type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'losses',            label:'Losses',                  type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'battersFaced',      label:'Batters Faced',           type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'blownSaves',        label:'Blown Saves',             type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'completeGames',     label:'Complete Games',          type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'shutouts',          label:'Shutouts',                type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'wildPitches',       label:'Wild Pitches',            type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'hitBatsmen',        label:'Hit Batters (HBP)',        type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'balks',             label:'Balks',                   type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'pickoffs',          label:'Pickoffs',                type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  {key:'inheritedRunners',  label:'Inherited Runners',       type:'season',careerOk:true, fmt:v=>+v,                              order:'desc'},
+  // ── Rate stats ─────────────────────────────────────────────────────────────
+  {key:'era',               label:'ERA',                     type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(2),        order:'asc',  pool:'Qualified'},
+  {key:'whip',              label:'WHIP',                    type:'season',careerOk:true, fmt:v=>parseFloat(v).toFixed(2),        order:'asc',  pool:'Qualified'},
+  {key:'strikeoutsPer9Inn', label:'K/9',                     type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),        order:'desc', pool:'Qualified'},
+  {key:'walksPer9Inn',      label:'BB/9',                    type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),        order:'asc',  pool:'Qualified'},
+  {key:'hitsPer9Inn',       label:'H/9',                     type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(1),        order:'asc',  pool:'Qualified'},
+  {key:'strikeoutWalkRatio',label:'K/BB Ratio',              type:'season',careerOk:false,fmt:v=>parseFloat(v).toFixed(2),        order:'desc', pool:'Qualified'},
+  // ── Advanced ───────────────────────────────────────────────────────────────
+  {key:'war',               label:'WAR',                     type:'sabermetrics',careerOk:false, fmt:v=>parseFloat(v).toFixed(1), order:'desc'},
+  {key:'fip',               label:'FIP',                     type:'sabermetrics',careerOk:false, fmt:v=>parseFloat(v).toFixed(2), order:'asc',  pool:'Qualified'},
+  {key:'xfip',              label:'xFIP',                    type:'sabermetrics',careerOk:false, fmt:v=>parseFloat(v).toFixed(2), order:'asc',  pool:'Qualified'},
+  {key:'eraMinus',          label:'ERA-',                    type:'sabermetrics',careerOk:false, fmt:v=>Math.round(v)+'',         order:'asc',  pool:'Qualified'},
+  {key:'fipMinus',          label:'FIP-',                    type:'sabermetrics',careerOk:false, fmt:v=>Math.round(v)+'',         order:'asc',  pool:'Qualified'},
 ];
 
 function logoUrl(id){ return `https://www.mlbstatic.com/team-logos/${id}.svg`; }
@@ -93,6 +123,7 @@ function isMatch(guess, playerName){
 }
 
 const MLB = 'https://statsapi.mlb.com/api/v1';
+
 async function fetchOneSeason(group, statDef, season, pool, position){
   const order = statDef.order||'desc';
   const playerPool = statDef.pool||pool||'ALL';
@@ -114,6 +145,7 @@ async function fetchPlayers(group, statDef, season, pool, position){
 
   let years = [];
   if(isCareer){
+    // career endpoint
   } else if(String(season).startsWith('range:')){
     const [,range] = season.split(':');
     const [start, end] = range.split('-').map(Number);
@@ -125,8 +157,6 @@ async function fetchPlayers(group, statDef, season, pool, position){
   } else {
     years = [season];
   }
-
-  let splits;
 
   if(isCareer){
     const playerPool = 'ALL';
@@ -140,7 +170,7 @@ async function fetchPlayers(group, statDef, season, pool, position){
     const r = await fetch(`${MLB}/stats?${params}`);
     if(!r.ok) throw new Error(`MLB API error ${r.status}`);
     const d = await r.json();
-    splits = d.stats?.[0]?.splits || [];
+    const splits = d.stats?.[0]?.splits || [];
     if(!splits.length) throw new Error('No data returned. Try a different season or category.');
     return splits.map((s,i)=>({
       rank:i+1, name:s.player?.fullName||'?',
@@ -161,7 +191,7 @@ async function fetchPlayers(group, statDef, season, pool, position){
     const r = await fetch(`${MLB}/stats?${params}`);
     if(!r.ok) throw new Error(`MLB API error ${r.status}`);
     const d = await r.json();
-    splits = d.stats?.[0]?.splits || [];
+    const splits = d.stats?.[0]?.splits || [];
     if(!splits.length) throw new Error('No data returned. Try a different season or category.');
     return splits.map((s,i)=>({
       rank:i+1, name:s.player?.fullName||'?',
@@ -202,12 +232,4 @@ async function fetchPlayers(group, statDef, season, pool, position){
     value:String(statDef.fmt(p.total)),
     nameLower:p.name.toLowerCase()
   }));
-}
-
-function computeStandings(guesses){
-  const sorted = [...guesses].sort((a,b)=>{
-    if(b.rank !== a.rank) return b.rank - a.rank;
-    return a.guessOrder - b.guessOrder;
-  });
-  return sorted;
 }
