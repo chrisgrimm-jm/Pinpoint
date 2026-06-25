@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pinpoint Challenge — Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:#0a0a0a;color:#fff;font-family:'Barlow',sans-serif;display:flex;flex-direction:column;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid #1a1a1a;flex-shrink:0;}
+.nav-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;}
+.nav-logo span{color:#e63946;}
+.nav-center{text-align:center;}
+.nav-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;letter-spacing:1px;}
+.nav-meta{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#333;margin-top:1px;}
+.nav-right{display:flex;gap:8px;align-items:center;}
+.badge{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;padding:4px 11px;border:1px solid #2a2a2a;border-radius:3px;color:#444;}
+
+/* Waiting */
+#waiting{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.wait-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:56px;letter-spacing:2px;color:#161616;}
+.wait-logo span{color:#1e0608;}
+.wait-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#1e1e1e;}
+
+/* Player cards grid */
+#gameArea{flex:1;display:none;padding:20px 28px;gap:16px;overflow:hidden;align-content:flex-start;}
+
+.player-card{background:#0f0f0f;border:1.5px solid #1a1a1a;border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all 0.3s;position:relative;overflow:hidden;}
+.player-card.current{border-color:#e63946;background:#130808;}
+.player-card.current::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#e63946;}
+.player-card.eliminated{opacity:0.3;filter:grayscale(1);}
+
+.pc-header{display:flex;align-items:center;gap:10px;}
+.pc-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;color:#2a2a2a;min-width:18px;}
+.pc-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:0.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pc-strikes{display:flex;gap:4px;}
+.pc-pip{width:11px;height:11px;border-radius:50%;background:#1a1a1a;border:1.5px solid #2a2a2a;transition:all 0.3s;}
+.pc-pip.hit{background:#e63946;border-color:#e63946;animation:pipPop 0.3s ease;}
+@keyframes pipPop{0%{transform:scale(0.5);}70%{transform:scale(1.3);}100%{transform:scale(1);}}
+
+.pc-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;line-height:1;color:#fff;text-align:center;padding:8px 0;}
+.player-card.current .pc-score{color:#e63946;}
+
+.pc-color-bar{height:3px;border-radius:2px;margin-top:2px;}
+
+.pc-last{font-size:11px;color:#333;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:16px;}
+.player-card.current .pc-last{color:#555;}
+
+.pc-guessing{position:absolute;top:8px;right:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#e63946;animation:blink 1s ease-in-out infinite alternate;}
+@keyframes blink{from{opacity:0.4;}to{opacity:1;}}
+
+/* Inning dots */
+.inning-row{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 28px;border-top:1px solid #1a1a1a;}
+.in-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#222;margin-right:8px;}
+.in-dot{width:24px;height:24px;border-radius:50%;background:#111;border:1.5px solid #1e1e1e;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:#222;transition:all 0.3s;}
+.in-dot.active{border-color:#e63946;color:#e63946;}
+.in-dot.done{background:#0f1a0f;border-color:#22c55e33;color:#22c55e;}
+
+/* Rank splash */
+#rankSplash{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;pointer-events:none;opacity:0;}
+#rankSplash.show{animation:splashIn 0.2s ease forwards;}
+#rankSplash.fly{animation:splashFly 0.55s cubic-bezier(0.4,0,0.2,1) forwards;}
+.splash-bg{position:absolute;inset:0;background:rgba(0,0,0,0.9);}
+.splash-who{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;}
+.splash-player{position:relative;font-size:20px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;text-align:center;}
+.splash-num{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(160px,26vw,260px);line-height:1;color:#fff;}
+.splash-num.green{color:#22c55e;text-shadow:0 0 100px rgba(34,197,94,0.4);}
+.splash-num.red{color:#e63946;text-shadow:0 0 100px rgba(230,57,70,0.4);}
+.splash-sub{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;letter-spacing:2px;color:#e63946;text-transform:uppercase;text-align:center;}
+.splash-strike{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:3px;color:#e63946;text-transform:uppercase;margin-top:4px;}
+@keyframes splashIn{from{opacity:0;transform:scale(0.6);}to{opacity:1;transform:scale(1);}}
+@keyframes splashFly{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(0.08) translateY(300px);}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">PINPOINT <span>CHALLENGE</span></div>
+  <div class="nav-center">
+    <div class="nav-title" id="navTitle">—</div>
+    <div class="nav-meta" id="navMeta"></div>
+  </div>
+  <div class="nav-right">
+    <div class="badge" id="inningBadge">—</div>
+  </div>
+</nav>
+
+<div id="waiting">
+  <div class="wait-logo">PINPOINT <span>CHALLENGE</span></div>
+  <div class="wait-sub">Waiting for host…</div>
+</div>
+
+<div id="gameArea"></div>
+
+<div class="inning-row" id="inningRow" style="display:none">
+  <span class="in-label">Innings</span>
+  <div id="inningDots"></div>
+</div>
+
+<div id="rankSplash">
+  <div class="splash-bg"></div>
+  <div class="splash-who" id="splashWho"></div>
+  <div class="splash-player" id="splashPlayer"></div>
+  <div class="splash-num" id="splashNum"></div>
+  <div class="splash-sub" id="splashSub"></div>
+  <div class="splash-strike" id="splashStrike"></div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+const MAX_INNINGS = 9, MAX_STRIKES = 3;
+const topic = new URLSearchParams(location.search).get('topic') || '';
+
+let lastState = null;
+let isInitialLoad = true;
+let pendingSplash = null;
+let splashBusy = false;
+
+function showRankSplash(rank, playerName, whoName, isStrike, strikeCount, onDone){
+  const el=document.getElementById('rankSplash');
+  const numEl=document.getElementById('splashNum');
+  const playerEl=document.getElementById('splashPlayer');
+  const subEl=document.getElementById('splashSub');
+  const strikeEl=document.getElementById('splashStrike');
+  const whoEl=document.getElementById('splashWho');
+
+  whoEl.textContent=whoName||'';
+  playerEl.textContent=playerName||'';
+
+  if(rank===999){
+    numEl.textContent='NOT FOUND';
+    numEl.className='splash-num red';
+    subEl.textContent='';
+  } else if(rank>100){
+    numEl.textContent='#'+rank;
+    numEl.className='splash-num red';
+    subEl.textContent=(rank-100)+' OVER THE LINE';
+  } else {
+    numEl.textContent='#'+rank;
+    numEl.className='splash-num '+(rank>=51?'green':'red');
+    subEl.textContent='';
+  }
+
+  if(isStrike){
+    const pips='⚾'.repeat(strikeCount);
+    strikeEl.textContent=strikeCount>=MAX_STRIKES?`${pips} ELIMINATED!`:`${pips} Strike ${strikeCount}`;
+  } else {
+    strikeEl.textContent='';
+  }
+
+  el.style.animation='none'; el.style.opacity='0';
+  void el.offsetWidth;
+  el.style.animation=''; el.style.opacity='';
+  el.className='show';
+
+  setTimeout(()=>{
+    el.className='fly';
+    setTimeout(()=>{
+      el.className=''; el.style.opacity='0';
+      splashBusy=false;
+      if(onDone) onDone();
+    },600);
+  },2000);
+}
+
+function buildInningDots(inning){
+  document.getElementById('inningDots').innerHTML=Array.from({length:MAX_INNINGS},(_,i)=>
+    `<div class="in-dot ${i+1<inning?'done':i+1===inning?'active':''}">${i+1}</div>`
+  ).join('');
+  document.getElementById('inningBadge').textContent=`Inning ${inning}`;
+}
+
+function getGridCols(n){ return n<=2?n:n<=4?2:3; }
+
+function render(state){
+  if(!state) return;
+  document.getElementById('waiting').style.display='none';
+  const ga=document.getElementById('gameArea');
+  ga.style.display='grid';
+  const n=state.players?.length||1;
+  ga.style.gridTemplateColumns=`repeat(${getGridCols(n)},1fr)`;
+
+  document.getElementById('navTitle').textContent=state.title||'';
+  document.getElementById('navMeta').textContent=state.meta||'';
+  document.getElementById('inningRow').style.display='flex';
+  buildInningDots(state.inning||1);
+
+  ga.innerHTML=(state.players||[]).map(p=>{
+    const pips=Array.from({length:MAX_STRIKES},(_,i)=>
+      `<div class="pc-pip ${i<p.strikes?'hit':''}"></div>`).join('');
+    const isCurrentPlayer=state.currentPlayerName===p.name&&!p.eliminated;
+    const lastText=p.lastGuess?(p.lastGuess.strike?`⚾ ${p.lastGuess.player}`:`✓ ${p.lastGuess.player} (#${p.lastGuess.rank})`):' ';
+    return `<div class="player-card ${isCurrentPlayer?'current':''} ${p.eliminated?'eliminated':''}">
+      ${isCurrentPlayer?'<div class="pc-guessing">Guessing…</div>':''}
+      <div class="pc-header">
+        <span class="pc-pos">${p.pos}</span>
+        <span class="pc-name">${p.name}</span>
+        <div class="pc-strikes">${pips}</div>
+      </div>
+      <div class="pc-score">${p.score}</div>
+      <div class="pc-color-bar" style="background:${p.color||'#333'}"></div>
+      <div class="pc-last">${lastText}</div>
+    </div>`;
+  }).join('');
+}
+
+function handleState(state){
+  if(!state) return;
+
+  if(state.status === 'reset'){
+    document.getElementById('waiting').style.display='flex';
+    document.getElementById('gameArea').style.display='none';
+    document.getElementById('inningRow').style.display='none';
+    lastState=null;
+    isInitialLoad=true;
+    return;
+  }
+
+  if(isInitialLoad){
+    isInitialLoad=false;
+    lastState=JSON.parse(JSON.stringify(state));
+    render(state);
+    return;
+  }
+
+  const changed=state.players?.find(p=>{
+    const prev=lastState?.players?.find(pp=>pp.name===p.name);
+    return prev && JSON.stringify(p.lastGuess)!==JSON.stringify(prev.lastGuess) && p.lastGuess;
+  });
+
+  if(changed && changed.lastGuess){
+    const lg=changed.lastGuess;
+    if(splashBusy){ pendingSplash=state; return; }
+    splashBusy=true;
+    lastState=JSON.parse(JSON.stringify(state));
+    showRankSplash(lg.rank, lg.player, changed.name, lg.strike, changed.strikes, ()=>{
+      render(state);
+      if(pendingSplash){ const next=pendingSplash; pendingSplash=null; handleState(next); }
+    });
+  } else {
+    lastState=JSON.parse(JSON.stringify(state));
+    render(state);
+  }
+}
+
+if(topic){
+  // Poll on load for reconnect state recovery
+  fetch('https://ntfy.sh/' + topic + '/json?poll=1&since=10m')
+    .then(r=>r.text()).then(text=>{
+      const lines=text.trim().split('\n').filter(Boolean);
+      if(!lines.length) return;
+      try {
+        const msg=JSON.parse(lines[lines.length-1]);
+        if(msg.message) handleState(JSON.parse(msg.message));
+      } catch(e){}
+    }).catch(()=>{});
+
+  // Live SSE subscription
+  const es=new EventSource('https://ntfy.sh/' + topic + '/sse');
+  es.addEventListener('message', e=>{
+    try {
+      const msg=JSON.parse(e.data);
+      if(msg.message) handleState(JSON.parse(msg.message));
+    } catch(e){}
+  });
+}
+</script>
+</body>
+</html>
