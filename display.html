@@ -7,56 +7,70 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
+/* --fs is the global display-board font scale. 1 = original size, 1.5 = +50% bigger.
+   Every font-size below is multiplied by it, so bump this one number to rescale the whole board. */
+:root{--fs:1.5;--cs:1;}
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{height:100%;overflow:hidden;}
-body{background:#0a0a0a;color:#fff;font-family:'Barlow',sans-serif;display:flex;flex-direction:column;}
+body{background:#0a0a0a;color:#fff;font-family:'Barlow',sans-serif;display:flex;flex-direction:column;position:relative;}
 
 nav{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid #1a1a1a;flex-shrink:0;}
-.nav-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;letter-spacing:1px;}
+.nav-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(20px*var(--fs));letter-spacing:1px;}
 .nav-logo span{color:#e63946;}
 .nav-center{text-align:center;}
-.nav-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;letter-spacing:1px;}
-.nav-meta{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#333;margin-top:1px;}
+.nav-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(24px*var(--fs));letter-spacing:1px;}
+.nav-meta{font-size:calc(9px*var(--fs));letter-spacing:2px;text-transform:uppercase;color:#333;margin-top:1px;}
 .nav-right{display:flex;gap:8px;align-items:center;}
-.badge{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;padding:4px 11px;border:1px solid #2a2a2a;border-radius:3px;color:#444;}
+.badge{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:calc(13px*var(--fs));letter-spacing:1px;padding:4px 11px;border:1px solid #2a2a2a;border-radius:3px;color:#444;}
 
 /* Waiting */
 #waiting{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
-.wait-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:56px;letter-spacing:2px;color:#161616;}
+.wait-logo{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(56px*var(--fs));letter-spacing:2px;color:#161616;}
 .wait-logo span{color:#1e0608;}
-.wait-sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#1e1e1e;}
+.wait-sub{font-size:calc(10px*var(--fs));letter-spacing:3px;text-transform:uppercase;color:#1e1e1e;}
 
 /* Player cards grid */
-#gameArea{flex:1;display:none;padding:20px 28px;gap:16px;overflow:hidden;align-content:flex-start;}
+#gameArea{flex:1;display:none;padding:20px 28px 40px;gap:16px;overflow:hidden;grid-auto-rows:1fr;}
 
-.player-card{background:#0f0f0f;border:1.5px solid #1a1a1a;border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;transition:all 0.3s;position:relative;overflow:hidden;}
+.player-card{background:#0f0f0f;border:1.5px solid #1a1a1a;border-radius:8px;padding:16px 20px;display:flex;flex-direction:column;gap:7px;transition:all 0.3s;position:relative;overflow:hidden;min-height:0;}
 .player-card.current{border-color:#e63946;background:#130808;}
 .player-card.current::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#e63946;}
 .player-card.eliminated{opacity:0.3;filter:grayscale(1);}
 
 .pc-header{display:flex;align-items:center;gap:10px;}
-.pc-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:14px;color:#2a2a2a;min-width:18px;}
-.pc-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:0.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pc-pos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(14px*var(--fs)*var(--cs));color:#2a2a2a;min-width:18px;}
+.pc-name{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(44px*var(--fs)*var(--cs));letter-spacing:0.5px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;}
 .pc-strikes{display:flex;gap:4px;}
 .pc-pip{width:11px;height:11px;border-radius:50%;background:#1a1a1a;border:1.5px solid #2a2a2a;transition:all 0.3s;}
 .pc-pip.hit{background:#e63946;border-color:#e63946;animation:pipPop 0.3s ease;}
 @keyframes pipPop{0%{transform:scale(0.5);}70%{transform:scale(1.3);}100%{transform:scale(1);}}
 
-.pc-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;line-height:1;color:#fff;text-align:center;padding:8px 0;}
+.pc-score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(52px*var(--fs)*var(--cs));line-height:1;color:#fff;text-align:center;padding:2px 0;}
 .player-card.current .pc-score{color:#e63946;}
 
-.pc-color-bar{height:3px;border-radius:2px;margin-top:2px;}
+.pc-color-bar{height:3px;border-radius:2px;margin-top:2px;flex-shrink:0;}
 
-.pc-last{font-size:11px;color:#333;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:16px;}
-.player-card.current .pc-last{color:#555;}
+/* Guessed-players list (Limbo-style), below the totals */
+.pc-guesses{display:flex;flex-direction:column;gap:5px;flex:1 1 auto;min-height:0;overflow-y:auto;margin-top:2px;padding-right:2px;scrollbar-width:thin;scrollbar-color:#1a1a1a #0c0c0c;}
+.pc-guesses::-webkit-scrollbar{width:4px;}
+.pc-guesses::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:2px;}
+.pg-row{display:flex;align-items:center;gap:8px;padding:5px 9px;background:#0c0c0c;border:1px solid #161616;border-radius:4px;}
+.pg-row.strike{background:#120808;border-color:#3a1010;}
+.pg-rank{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(15px*var(--fs)*var(--cs));color:#22c55e;min-width:calc(30px*var(--fs)*var(--cs));flex-shrink:0;}
+.pg-row.strike .pg-rank{color:#e63946;}
+.pg-name{flex:1;font-size:calc(13px*var(--fs)*var(--cs));color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pg-row.strike .pg-name{color:#e63946;}
+.pg-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:calc(14px*var(--fs)*var(--cs));color:#fff;flex-shrink:0;}
+.pg-note{font-size:calc(10px*var(--fs)*var(--cs));letter-spacing:1px;text-transform:uppercase;color:#e63946;flex-shrink:0;}
 
-.pc-guessing{position:absolute;top:8px;right:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#e63946;animation:blink 1s ease-in-out infinite alternate;}
+.pc-guessing{position:absolute;top:8px;right:10px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:calc(10px*var(--fs));letter-spacing:2px;text-transform:uppercase;color:#e63946;animation:blink 1s ease-in-out infinite alternate;}
 @keyframes blink{from{opacity:0.4;}to{opacity:1;}}
 
 /* Inning dots */
-.inning-row{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:8px 28px;border-top:1px solid #1a1a1a;}
-.in-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#222;margin-right:8px;}
-.in-dot{width:24px;height:24px;border-radius:50%;background:#111;border:1.5px solid #1e1e1e;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:#222;transition:all 0.3s;}
+.inning-row{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px 28px;}
+#inningDots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;}
+.in-label{font-size:calc(9px*var(--fs));letter-spacing:2px;text-transform:uppercase;color:#222;margin-right:6px;}
+.in-dot{width:20px;height:20px;border-radius:50%;background:#111;border:1.5px solid #1e1e1e;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:calc(10px*var(--fs));color:#222;transition:all 0.3s;}
 .in-dot.active{border-color:#e63946;color:#e63946;}
 .in-dot.done{background:#0f1a0f;border-color:#22c55e33;color:#22c55e;}
 
@@ -65,13 +79,13 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:10px 2
 #rankSplash.show{animation:splashIn 0.2s ease forwards;}
 #rankSplash.fly{animation:splashFly 0.55s cubic-bezier(0.4,0,0.2,1) forwards;}
 .splash-bg{position:absolute;inset:0;background:rgba(0,0,0,0.9);}
-.splash-who{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;}
-.splash-player{position:relative;font-size:20px;color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;text-align:center;}
-.splash-num{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(160px,26vw,260px);line-height:1;color:#fff;}
+.splash-who{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:calc(18px*var(--fs));letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;}
+.splash-player{position:relative;font-size:calc(20px*var(--fs));color:rgba(255,255,255,0.4);font-family:'Barlow',sans-serif;text-align:center;}
+.splash-num{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(calc(160px*var(--fs)),calc(26vw*var(--fs)),calc(260px*var(--fs)));line-height:1;color:#fff;}
 .splash-num.green{color:#22c55e;text-shadow:0 0 100px rgba(34,197,94,0.4);}
 .splash-num.red{color:#e63946;text-shadow:0 0 100px rgba(230,57,70,0.4);}
-.splash-sub{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;letter-spacing:2px;color:#e63946;text-transform:uppercase;text-align:center;}
-.splash-strike{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:3px;color:#e63946;text-transform:uppercase;margin-top:4px;}
+.splash-sub{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(28px*var(--fs));letter-spacing:2px;color:#e63946;text-transform:uppercase;text-align:center;}
+.splash-strike{position:relative;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:calc(22px*var(--fs));letter-spacing:3px;color:#e63946;text-transform:uppercase;margin-top:4px;}
 @keyframes splashIn{from{opacity:0;transform:scale(0.6);}to{opacity:1;transform:scale(1);}}
 @keyframes splashFly{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(0.08) translateY(300px);}}
 </style>
@@ -174,7 +188,16 @@ function buildInningDots(inning){
   document.getElementById('inningBadge').textContent=`Inning ${inning}`;
 }
 
-function getGridCols(n){ return n<=2?n:n<=4?2:3; }
+// Columns per player count. Boxes shrink to fill; extra players wrap into new rows
+// (grid-auto-rows:1fr + overflow:hidden keeps the whole board on one screen — no scrolling).
+function getGridCols(n){
+  if(n<=1) return 1;
+  if(n===2) return 2;   // the showcase two-box layout
+  if(n===3) return 3;
+  if(n===4) return 2;   // 2×2
+  if(n<=6) return 3;    // 5–6 → 3×2
+  return 4;             // 7–8 → 4×2
+}
 
 function render(state){
   if(!state) return;
@@ -183,6 +206,8 @@ function render(state){
   ga.style.display='grid';
   const n=state.players?.length||1;
   ga.style.gridTemplateColumns=`repeat(${getGridCols(n)},1fr)`;
+  // Shrink box contents as players are added so every pick stays visible without scrolling.
+  ga.style.setProperty('--cs', n<=2?1 : n<=4?0.8 : n<=6?0.62 : 0.5);
 
   document.getElementById('navTitle').textContent=state.title||'';
   document.getElementById('navMeta').textContent=state.meta||'';
@@ -193,7 +218,15 @@ function render(state){
     const pips=Array.from({length:MAX_STRIKES},(_,i)=>
       `<div class="pc-pip ${i<p.strikes?'hit':''}"></div>`).join('');
     const isCurrentPlayer=state.currentPlayerName===p.name&&!p.eliminated;
-    const lastText=p.lastGuess?(p.lastGuess.strike?`⚾ ${p.lastGuess.player}`:`✓ ${p.lastGuess.player} (#${p.lastGuess.rank})`):' ';
+    // Full list of everyone this contestant has guessed, newest first (Limbo-style)
+    const guesses=(p.guesses||[]).slice().reverse().map(g=>{
+      const val=(g.value!=null&&g.value!=='—')?`<span class="pg-val">${g.value}</span>`:'';
+      if(g.strike){
+        const note=g.rank===999?'Not found':(g.rank>100?`+${g.rank-100} over`:'');
+        return `<div class="pg-row strike"><span class="pg-rank">⚾</span><span class="pg-name">${g.player}</span>${val}${note?`<span class="pg-note">${note}</span>`:''}</div>`;
+      }
+      return `<div class="pg-row"><span class="pg-rank">#${g.rank}</span><span class="pg-name">${g.player}</span>${val}</div>`;
+    }).join('');
     return `<div class="player-card ${isCurrentPlayer?'current':''} ${p.eliminated?'eliminated':''}">
       ${isCurrentPlayer?'<div class="pc-guessing">Guessing…</div>':''}
       <div class="pc-header">
@@ -203,7 +236,7 @@ function render(state){
       </div>
       <div class="pc-score">${p.score}</div>
       <div class="pc-color-bar" style="background:${p.color||'#333'}"></div>
-      <div class="pc-last">${lastText}</div>
+      <div class="pc-guesses">${guesses}</div>
     </div>`;
   }).join('');
 }
