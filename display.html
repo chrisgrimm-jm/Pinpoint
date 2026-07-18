@@ -126,7 +126,8 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:10px 2
 
 <script src="shared.js"></script>
 <script>
-const MAX_INNINGS = 9, MAX_STRIKES = 3;
+const MAX_INNINGS = 9;
+let MAX_STRIKES = 3;   // host-configured via published state
 const topic = new URLSearchParams(location.search).get('topic') || '';
 
 let lastState = null;
@@ -242,6 +243,7 @@ function render(state){
 }
 
 function handleState(state){
+  if(state && state.maxStrikes) MAX_STRIKES = state.maxStrikes;
   if(!state) return;
 
   if(state.status === 'reset'){
